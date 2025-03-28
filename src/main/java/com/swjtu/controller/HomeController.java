@@ -3,12 +3,10 @@ package com.swjtu.controller;
 
 import com.swjtu.entity.DiscussPost;
 import com.swjtu.entity.Page;
-import com.swjtu.entity.PageBean;
 import com.swjtu.entity.User;
 import com.swjtu.service.DiscussPostService;
 import com.swjtu.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +44,6 @@ public class HomeController {
             }
         }
         model.addAttribute("discussPosts", discussPosts);
-        return "index";
+        return "/index";
     }
 }
