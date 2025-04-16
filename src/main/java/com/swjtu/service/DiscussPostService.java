@@ -12,4 +12,10 @@ public interface DiscussPostService {
     int selectDiscussPostRows(@Param("userId") Integer userId);
 
     List<DiscussPost> findDiscussPosts(Integer userId, Integer offset, Integer limit);
+
+    int addDiscussPost(DiscussPost discussPost);
+
+    DiscussPost findDiscussPostById(int id);
+
+    int updateCommentCount(int id, int commentCount);
 }

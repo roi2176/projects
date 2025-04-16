@@ -4,20 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DiscussPost {
+public class Comment {
     private int id;
     private int userId;
-    private String title;
+    private int entityType;
+    private int entityId;
     private String content;
-    private int type;
+    private int targetId;
     private int status;
     private Date createTime;
-    private int commentCount;
-    private double score;
 }

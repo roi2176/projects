@@ -14,4 +14,11 @@ public interface DiscussPostMapper {
      int selectDiscussPostRows(Integer userId);
 
     List<DiscussPost> selectDiscussPosts(Integer userId, Integer offset, Integer limit);
+
+    //发布新帖
+    int insertDiscussPost(DiscussPost discussPost);
+
+    DiscussPost selectDiscussPostById(int id);
+
+    int updateCommentCount(int id, int commentCount);
 }
