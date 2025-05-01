@@ -5,6 +5,7 @@ import com.swjtu.entity.User;
 import com.swjtu.service.FollowService;
 import com.swjtu.service.LikeService;
 import com.swjtu.service.UserService;
+import com.swjtu.util.AliOSSUtils;
 import com.swjtu.util.CommunityConstant;
 import com.swjtu.util.CommunityUtil;
 import com.swjtu.util.HostHolder;
@@ -17,16 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -56,46 +55,89 @@ public class UserController implements CommunityConstant {
     @Autowired
     private FollowService followService;
 
-    @LoginRequired
+    @Autowired
+    private AliOSSUtils aliOSSUtils;
+
+    @Value("${aliyun.oss.endpoint}")
+    private String endpoint;
+
+    @Value("${aliyun.oss.headerBucket}")
+    private String headerBucketName;
+
+
     @GetMapping("/setting")
     public String getSettingPage() {
         return "/site/setting";
     }
 
+    //更新头像路径
+//    @PostMapping("/header/url")
+//    @ResponseBody
+//    public String updateHeaderUrl(String fileName){
+//        if (StringUtils.isBlank(fileName)) {
+//            return CommunityUtil.getJSONString(1, "文件名不能为空!");
+//        }
+//
+//        String url = endpoint.split("//")[0] + "//" + headerBucketName + "." + endpoint.split("//")[1] + "/" + fileName;
+//        userService.updateHeader(hostHolder.getUser().getId(), url);
+//
+//        return CommunityUtil.getJSONString(0);
+//    }
+
+    //废弃
+//    @LoginRequired
+//    @PostMapping("/upload")
+//    public String uploadHeader(MultipartFile headerImage, Model model) {
+//        if (headerImage == null) {
+//            model.addAttribute("error", "您还没有选择图片");
+//            return "/site/setting";
+//        }
+//
+//        String filename = headerImage.getOriginalFilename();
+//        String suffix = filename.substring(filename.lastIndexOf("."));
+//        if (StringUtils.isBlank(suffix)) {
+//            model.addAttribute("error", "文件格式不正确");
+//            return "/site/setting";
+//        }
+//
+//        //获取本地储存路径并存放
+//        filename = CommunityUtil.generateUUID() + suffix;
+//        File dest = new File(uploadPath + "/" + filename);
+//        try {
+//            headerImage.transferTo(dest);
+//        } catch (IOException e) {
+//            log.error("上传文件失败：" + e.getMessage());
+//            throw new RuntimeException("上传文件失败，服务器发生异常", e);
+//        }
+//
+//        //更新web访问路径
+//        // http://localhost:8080/community/user/header/xxx.png
+//        User user = hostHolder.getUser();
+//        String headerUrl = domain + contextPath + "/user/header/" + filename;
+//        userService.updateHeader(user.getId(), headerUrl);
+//
+//        return "redirect:/index";
+//    }
+
     @LoginRequired
     @PostMapping("/upload")
-    public String uploadHeader(MultipartFile headerImage, Model model) {
+    public String uploadHeader(MultipartFile headerImage, Model model) throws IOException{
         if (headerImage == null) {
             model.addAttribute("error", "您还没有选择图片");
             return "/site/setting";
         }
 
-        String filename = headerImage.getOriginalFilename();
-        String suffix = filename.substring(filename.lastIndexOf("."));
-        if (StringUtils.isBlank(suffix)) {
-            model.addAttribute("error", "文件格式不正确");
-            return "/site/setting";
-        }
+        String uuid = UUID.randomUUID().toString();
 
-        //获取本地储存路径并存放
-        filename = CommunityUtil.generateUUID() + suffix;
-        File dest = new File(uploadPath + "/" + filename);
-        try {
-            headerImage.transferTo(dest);
-        } catch (IOException e) {
-            log.error("上传文件失败：" + e.getMessage());
-            throw new RuntimeException("上传文件失败，服务器发生异常", e);
-        }
+        String url = aliOSSUtils.upload(headerImage, uuid);
 
         //更新web访问路径
-        // http://localhost:8080/community/user/header/xxx.png
         User user = hostHolder.getUser();
-        String headerUrl = domain + contextPath + "/user/header/" + filename;
-        userService.updateHeader(user.getId(), headerUrl);
-
+        userService.updateHeader(user.getId(), url);
         return "redirect:/index";
     }
 
+    //废弃
     @GetMapping("/header/{filename}")
     public void getHeader(@PathVariable("filename") String fileName, HttpServletResponse response) {
         fileName = uploadPath + "/" + fileName;

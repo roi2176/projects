@@ -32,6 +32,42 @@ spring:
       database: 11
       host: localhost
       port: 6379
+
+
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 15
+        queue-capacity: 100
+
+    scheduling:
+      pool:
+        size: 5
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: test-consumer-group
+      enable-auto-commit: true
+      auto-commit-interval: 3000
+
+  quartz:
+    job-store-type: jdbc
+    scheduler-name: communityScheduler
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            isClustered: true
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 5
+
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -55,4 +91,18 @@ community:
     domain: http://localhost:8080
     upload: d:/save_files/pictures
 
-# Redis
+wk:
+  image:
+    command: d:/code/wkhtmltopdf/bin/wkhtmltoimage
+    storage: d:/save_files/wk-images
+
+#aliyiyun
+aliyun:
+  oss:
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    bucketName: my-web-bucket065
+
+caffeine:
+  posts:
+    max-size: 15
+    expire-seconds: 180

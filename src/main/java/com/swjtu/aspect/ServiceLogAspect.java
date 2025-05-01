@@ -13,13 +13,14 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Component
-@Aspect
+//@Component
+//@Aspect
 @Slf4j
 public class ServiceLogAspect {
     @Before("execution(* com.swjtu.service.*.*(..))")
     public void before(JoinPoint joinPoint){
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) return;
         HttpServletRequest request = attributes.getRequest();
         String ip = request.getRemoteHost();
         String now = new SimpleDateFormat("yyy-MM-dd HH:mm:ss").format(new Date());

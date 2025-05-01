@@ -1,7 +1,9 @@
 package com.swjtu.controller;
 
+import com.swjtu.entity.Event;
 import com.swjtu.entity.Page;
 import com.swjtu.entity.User;
+import com.swjtu.event.EventProducer;
 import com.swjtu.service.FollowService;
 import com.swjtu.service.UserService;
 import com.swjtu.util.CommunityConstant;
@@ -25,6 +27,9 @@ public class FollowController implements CommunityConstant {
     private FollowService followService;
 
     @Autowired
+    private EventProducer eventProducer;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -36,6 +41,16 @@ public class FollowController implements CommunityConstant {
         User user = hostHolder.getUser();
 
         followService.follow(user.getId(), entityType, entityId);
+
+        //触发关注事件
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId);
+        eventProducer.fireEvent(event);
+
         return CommunityUtil.getJSONString(0, "已关注");
     }
 

@@ -13,7 +13,7 @@ public interface DiscussPostMapper {
 
      int selectDiscussPostRows(Integer userId);
 
-    List<DiscussPost> selectDiscussPosts(Integer userId, Integer offset, Integer limit);
+    List<DiscussPost> selectDiscussPosts(Integer userId, Integer offset, Integer limit, Integer orderMode);
 
     //发布新帖
     int insertDiscussPost(DiscussPost discussPost);
@@ -21,4 +21,10 @@ public interface DiscussPostMapper {
     DiscussPost selectDiscussPostById(int id);
 
     int updateCommentCount(int id, int commentCount);
+
+    int updateType(int id, int type);
+
+    int updateStatus(int id, int status);
+
+    int updateScore(int id, double score);
 }
